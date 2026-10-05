@@ -27,13 +27,6 @@ def new_session(query: str, wardrobe: dict) -> dict:
 
     The session is the single source of truth for a run. Every tool result goes
     in here, and the next tool reads it back out.
-
-    You could pass values straight from one call to the next. It would work,
-    and you would not be able to test it — you can't print a variable you have
-    already overwritten. Going through the session is what makes the state
-    visible, and unit 4 has you write a criterion about exactly that.
-
-    Add fields if you need them.
     """
     return {
         "query": query,              # what the user typed
@@ -60,55 +53,92 @@ def run_agent(query: str, wardrobe: dict) -> dict:
                   get_empty_wardrobe() from utils/data_loader.py.
 
     Returns:
-        The session dict. **Check session["error"] first** — if it isn't None,
+        The session dict. Check session["error"] first — if it isn't None,
         the run ended early and the later fields will still be None.
-
-    ─────────────────────────────────────────────────────────────────────────
-    TODO — build this, following the branch rule you wrote in Milestone 2.
-
-      1. Start a session with new_session().
-
-      2. Count the times round the loop, and call trace.check_iterations(count)
-         on each one before you go again. It raises when the count passes
-         MAX_ITERATIONS in config.py — see trace.py.
-
-      3. Parse the query into a description, a size, and a max_price. Regex,
-         string splitting, or asking the model are all fine — say which you
-         chose in your README. Put the result in session["parsed"].
-
-      4. Call search_listings() with what you parsed.
-         Put the results in session["search_results"].
-
-         ⚠️ THIS IS THE BRANCH. If nothing came back:
-              - put a message in session["error"] saying what the user could
-                change — "No results" is not that message
-              - return the session
-              - do NOT call suggest_outfit with nothing
-
-      5. Choose an item — the first result is fine. Put it in
-         session["selected_item"].
-
-      6. Call suggest_outfit() with the selected item and the wardrobe.
-         Put the result in session["outfit_suggestion"].
-
-      7. Call create_fit_card() with the outfit and the item.
-         Put the result in session["fit_card"].
-
-      8. Return the session.
-
-    ─────────────────────────────────────────────────────────────────────────
-    IN UNIT 4 you come back and add two things:
-
-      • Trace calls. One per step. `trace.step("search_listings", inputs=...,
-        returned=...)` — see trace.py. Your README needs the output.
-
-      • A handler for ModelUnavailable, so a bad key produces a message rather
-        than a stack trace. The import is already at the top of this file.
     """
+    # 1. Start a session
     session = new_session(query, wardrobe)
 
-    # TODO: delete these two lines and build the loop.
-    session["error"] = "The planning loop isn't built yet — see the TODO in agent.py."
+    # 2. Track iterations
+    iterations = 0
+    iterations += 1
+    trace.check_iterations(iterations)
+
+    # 3. Parse query constraints (Price and Size)
+    words = query.lower().split()
+    max_price = None
+    for i, word in enumerate(words):
+        if "$" in word:
+            try:
+                max_price = float(word.replace("$", "").replace(",", ""))
+            except ValueError:
+                pass
+        elif word == "under" and i + 1 < len(words):
+            next_word = words[i + 1].replace("$", "")
+            try:
+                max_price = float(next_word)
+            except ValueError:
+                pass
+
+    size = None
+    valid_sizes = ["XXS", "XS", "S", "M", "L", "XL", "XXL"]
+    for word in words:
+        if word.upper() in valid_sizes:
+            size = word.upper()
+            break
+
+    # Clean description string
+    description = query
+    for remove_word in ["under", f"${max_price}" if max_price else "", "size", size if size else ""]:
+        if remove_word:
+            description = description.replace(str(remove_word), "")
+    description = " ".join(description.split())
+
+    session["parsed"] = {
+        "description": description,
+        "size": size,
+        "max_price": max_price,
+    }
+
+    # 4. Call Tool 1: search_listings
+    results = search_listings(
+        description=session["parsed"]["description"],
+        size=session["parsed"]["size"],
+        max_price=session["parsed"]["max_price"],
+    )
+    session["search_results"] = results
+
+    # ⚠️ BRANCH RULE: Check if search results are empty
+    if not session["search_results"]:
+        filters_applied = []
+        if size:
+            filters_applied.append(f"size '{size}'")
+        if max_price:
+            filters_applied.append(f"budget under ${max_price:.2f}")
+
+        filter_str = " and ".join(filters_applied) if filters_applied else "your query parameters"
+        session["error"] = (
+            f"No listings found matching {filter_str}. "
+            "Try broadening your search by raising your price limit, removing size constraints, or using simpler search terms."
+        )
+        return session
+
+    # 5. Choose an item and place in session state
+    session["selected_item"] = session["search_results"][0]
+
+    # 6. Call Tool 2: suggest_outfit using session state
+    session["outfit_suggestion"] = suggest_outfit(
+        new_item=session["selected_item"],
+        wardrobe=session["wardrobe"],
+    )
+
+    # 7. Call Tool 3: create_fit_card using session state
+    session["fit_card"] = create_fit_card(
+        outfit=session["outfit_suggestion"],
+        new_item=session["selected_item"],
+    )
+
+    # 8. Return finished session
     return session
 
 
