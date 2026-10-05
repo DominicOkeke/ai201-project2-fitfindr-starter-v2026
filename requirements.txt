@@ -1,0 +1,24 @@
+# AI201 — pinned with BOTH lower and upper bounds, on purpose.
+#
+# An unpinned upper bound published a breaking release mid-term last year and
+# took a live class demo down with it. Don't loosen these, and don't run
+# `pip install --upgrade` inside this project's virtual environment.
+#
+# Supported Python: 3.11, 3.12, or 3.13. NOT 3.14 — it ships as the default on
+# recent macOS versions and several of these packages don't support it yet.
+
+# Loads your API key out of .env
+python-dotenv>=1.0,<1.2
+
+# Calls the model that writes outfit suggestions and fit cards.
+google-genai>=1.0,<2.0
+
+# Model Context Protocol — unit 4. The only new install in this pair.
+mcp>=1.0,<2.0
+
+# The web server behind serve.py — unit 9, when you deploy one of your systems.
+flask>=3.0,<4.0
+
+# How a host runs serve.py: `gunicorn serve:app`. Also unit 9 — nothing before
+# then uses it, and you never need to run it on your own machine.
+gunicorn>=21.2,<24.0
