@@ -137,10 +137,22 @@ If `search_listings` returns an empty list (`[]`), store a helpful user message 
      1. One FULL query and its output, pasted as text.
      2. Your three per-tool terminal tests — the command and what it printed. -->
 
+## Sample Run
+
+### Individual Tool Terminal Tests
+
+
+
 **One full query**
 
 ```
 $ python app.py ask '...'
+
+(.venv) PS C:\Users\dokek\Downloads\ai201-project2-fitfindr-starter-v2026-main> python app.py ask 'vintage graphic tee under $30'
+
+  The planning loop isn't built yet — see the TODO in agent.py.
+
+0 model calls this session
 
 ```
 
@@ -151,16 +163,38 @@ $ python -c "from tools import search_listings; print(search_listings('graphic t
 
 ```
 
+
+1. **`search_listings` test:**
+```
+PS> python -c "from tools import search_listings; print(search_listings('graphic tee', size='M', max_price=30))"
+[{'id': 'lst_002', 'title': 'Y2K Baby Tee — Butterfly Print', 'description': 'Super cute early2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.', 'category': 'tops', 'style_tags': ['y2k', 'vintage', 'graphic tee', 'cottagecore'], 'size': 'S/M', 'condition': 'excellent', 'price': 18.0, 'colors': ['white', 'pink', 'purple'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_017', 'title': 'Mesh Long-Sleeve Top — Black', 'description': 'Sheer black mesh long-sleeve. Great for layering under a graphic tee or over a bralette. Stretchy material, fits true to size.', 'category': 'tops', 'style_tags': ['y2k', 'grunge', 'goth', 'layering'], 'size': 'S/M', 'condition': 'excellent', 'price': 15.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}]
 ```
 $ python -c "from tools import suggest_outfit; ..."
 
+2. **`suggest_outfit` test:**
 ```
+PS> python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
+Here are 2 outfit combinations using the new vintage Levi's 501s and pieces from your existing wardrobe:
 
+Outfit 1: Casual & Clean (Everyday Look)
+- Bottoms: Vintage Levi's 501 Jeans (Medium Wash)
+- Tops: White top
+- Shoes: White shoes
+- Accessories: Black accessories
+
+Outfit 2: Edgy & Monochromatic Contrast
+- Bottoms: Vintage Levi's 501 Jeans (Medium Wash)
+- Tops: Black top
+- Outerwear: Black outerwear
+- Shoes: Black shoes
+- Accessories: Brown accessories
 ```
 $ python -c "from tools import create_fit_card; ..."
 
+3. **`create_fit_card` test:**
 ```
-
+PS> python -c "from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card('Pair with high-waisted jeans and white sneakers', load_listings()[0]))"
+Score! Just scored these Vintage Levi's 501 Jeans — Medium Wash on depop for only $38.0 and I'm obsessed. Can't wait to style them with a cropped white tee and fresh white sneakers for that effortless everyday look. 🌱✨
 ---
 
 ## How I Used AI
