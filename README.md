@@ -41,6 +41,7 @@
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
 
+FitFindr is an AI-powered styling and outfit agent that finds clothing listings across platforms based on user constraints (keywords, size, and price ceiling). It evaluates search results against a user's existing wardrobe to generate curated outfit combinations and produces a social-ready fit card summary.
 
 
 ---
@@ -118,15 +119,31 @@
      The grader checks your code against what you claim here, so the file and
      function have to be real. -->
 
+## Planning Loop
+- **File and Function:** `agent.py::run_agent`
+"If `search_listings` returns an empty list `[]`, set a message in `session["error"]` explaining which query constraints failed and stop. Otherwise, store the top result in `session["selected_item"]` and proceed to `suggest_outfit`."
+— `agent.py::run_agent`
 **Branch rule:**
 If `search_listings` returns an empty list (`[]`), store a helpful user message in `session["error_message"]` naming what parameters to broaden (e.g., price or size) and stop execution. Otherwise, store the first matched item in `session["selected_item"]` and proceed to `suggest_outfit`.
 
 
 **Where it lives:** `agent.py::run_agent`
 
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
-
 **What moves through the session:** <!-- which fields, in what order -->
+
+**How the query is parsed:** 
+The query is parsed using **string splitting and keyword inspection**. In `agent.py::run_agent`, the input string is converted to lowercase and split into tokens to locate the `under` keyword or `$` symbol for `max_price` extraction, and matched against standard size tokens (`XXS` through `XXL`) for `size` extraction. The remaining tokens are joined to form the clean `description` search string.
+
+**What moves through the session:** 
+The session dictionary acts as the single source of truth, populating and reading fields in this sequence:
+1. `session["query"]`: Initialized with the raw user input string.
+2. `session["parsed"]`: Stores the extracted constraints (`description`, `size`, `max_price`).
+3. `session["search_results"]`: Filled with the list of candidate item dicts returned by `search_listings()`.
+4. `session["selected_item"]`: Set to the first match (`search_results[0]`) for downstream processing. *(If `search_results` is empty, execution halts here and `session["error"]` is set).*
+5. `session["outfit_suggestion"]`: Reads `session["selected_item"]` and `session["wardrobe"]`, storing the string output from `suggest_outfit()`.
+6. `session["fit_card"]`: Reads `session["outfit_suggestion"]` and `session["selected_item"]`, storing the final social caption string from `create_fit_card()`.
+
+
 
 ---
 
@@ -206,17 +223,20 @@ Score! Just scored these Vintage Levi's 501 Jeans — Medium Wash on depop for o
      "I gave Claude my search_listings spec. It returned None on no match
      instead of an empty list, so I changed it" is the level we want. -->
 
+
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked the model to parse natural language queries into structured parameters (`description`, `size`, `max_price`) for my `search_listings` tool.
+- *What came back:* It successfully extracted the arguments, but returned the `size` string as lowercase (e.g., `'m'`), which caused mismatch issues against listing sizes formatted as uppercase tokens (`'US M'` or `'M'`).
+- *What I changed:* I modified the parsing logic in `agent.py` to enforce uppercase normalization (e.g., `size.upper()`) and handled token matching so `size='M'` correctly matches strings like `'S/M'` or `'US M'`.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked Claude how to handle empty search returns in Milestone 5 when no listings match a user's constraints.
+- *What came back:* It suggested tweaking the query parameters and re-running the test to see if the search results would change.
+- *What I changed:* I re-ran the test with different query parameters, but when the return remained empty as expected, I verified that the branching rule in `agent.py` correctly caught the empty list `[]`, set `session["error"]` with an informative message, and halted execution without making wasteful downstream model calls.
+
+
 
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
