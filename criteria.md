@@ -42,7 +42,9 @@ Given a query that matches no listings, the agent stops before calling
 
 ---
 
-## 3. Something about state
+## 3. State session making execution obsevable and testable
+
+Given a successful search that selects an item, the dictionary passed as `new_item` into `suggest_outfit` matches the `title` and `price` of the item stored in `session["selected_item"]` by `search_listings` — in 5 of 5 tries.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -57,12 +59,12 @@ Given a query that matches no listings, the agent stops before calling
 
 
 **Why this target:**
-
-
-
+   **Reason:** State persistence between tool calls is a deterministic programmatic operation. Verifying that key identifier fields like `title` and `price` inside `session["selected_item"]` remain identical when passed to `suggest_outfit` proves that data flows reliably across the loop without corruption or re-prompting.
 ---
 
-## 4. Something about the fit card
+## 4.Fit card quality
+
+Given a valid outfit recommendation, `create_fit_card` produces a non-empty caption under 280 characters that explicitly mentions both the title of the selected item and its price — in at least 4 of 5 tries.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -78,7 +80,7 @@ Given a query that matches no listings, the agent stops before calling
 
 
 **Why this target:**
-
+A target of 4 of 5 tries (80%) is set because create_fit_card calls an LLM, which introduces non-deterministic text generation. While character limits and specific prompt requirements (like including item title and price) guide the model, stochastic variations can occasionally lead to an omission or slightly wordy response. An 80% pass rate ensures the output remains consistently practical and concise for social media posts without imposing an unrealistically rigid standard on a generative model.
 
 
 ---
@@ -92,11 +94,10 @@ Given a query that matches no listings, the agent stops before calling
      search respects a price ceiling — anything, as long as it names a number
      or an observable outcome. -->
 
-
+5. Tool Selection / Routing Accuracy: Given a query with explicit filter parameters (e.g., "vintage graphic tee under $30, size M"), the planning loop correctly invokes `search_listings` with the parsed parameters (`description: "vintage graphic tee"`, `max_price: 30.0`, `size: "M"`) — in at least 4 of 5 tries.
 
 **Why this target:**
-
-
+I picked 4 of 5 tries (80%) because extracting unstructured parameters from natural language prompts relies on model reasoning or regex parsing, which can occasionally misinterpret implicit or complex phrasing (such as missing a dollar sign or misreading size abbreviations). Setting an 80% threshold ensures that the planning loop reliably passes accurate typed arguments to search_listings while accommodating minor natural language parsing variations.
 
 ---
 

@@ -35,7 +35,6 @@ EXAMPLE_QUERIES = [
     "designer ballgown size XXS under $5",   # matches nothing, on purpose
 ]
 
-
 def cmd_fields(args):
     """Milestone 1 — you can't filter on a field that isn't there."""
     from utils.data_loader import load_listings, get_example_wardrobe
@@ -60,7 +59,6 @@ def cmd_fields(args):
         "\nThese are what search_listings can filter on. Read a few whole "
         "listings\nwith `python app.py listings` before you write it."
     )
-
 
 def cmd_listings(args):
     """Milestone 1 — read the data before you write tools against it."""
@@ -90,7 +88,6 @@ def cmd_listings(args):
         print(f"\n… {len(listings) - args.n} more. Use -n {len(listings)} to see them all.")
     print("\nRead five or six all the way through: python app.py listings --full -n 6")
 
-
 def cmd_examples(args):
     print("Queries worth trying:\n")
     for query in EXAMPLE_QUERIES[:-1]:
@@ -102,7 +99,6 @@ def cmd_examples(args):
         "loses the $30 — it gets read as a variable — and you search with no\n"
         "price ceiling, with nothing to tell you it happened."
     )
-
 
 def _ask_one(query, wardrobe, use_trace):
     from agent import run_agent
@@ -134,7 +130,6 @@ def _ask_one(query, wardrobe, use_trace):
             )
     return session
 
-
 def cmd_ask(args):
     from utils.data_loader import get_example_wardrobe, get_empty_wardrobe
     import generate
@@ -159,7 +154,6 @@ def cmd_ask(args):
                 _ask_one(query, wardrobe, args.trace)
     finally:
         print(generate.usage())
-
 
 def build_parser():
     parser = argparse.ArgumentParser(
@@ -193,7 +187,6 @@ def build_parser():
 
     return parser
 
-
 def main():
     args = build_parser().parse_args()
     try:
@@ -205,6 +198,7 @@ def main():
         print(f"\n{type(exc).__name__}: {exc}\n", file=sys.stderr)
         sys.exit(1)
 
-
 if __name__ == "__main__":
     main()
+
+
