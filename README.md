@@ -252,18 +252,74 @@ Score! Just scored these Vintage Levi's 501 Jeans — Medium Wash on depop for o
      row targeting 4 of 5 with three PASS cells is MISSED (3/5).
 
      `python run_eval.py --label before` runs everything and writes the table
-     into results/. Paste it here and fill in the verdicts. -->
+     into results/. Paste it here and fill in the verdicts. --->
+
 
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
 |---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| 1. A matching query completes all three tools | 4 of 5 | PASS | PASS | PASS | PASS | PASS | PASS (5/5) |
+| 2. An impossible query stops before the second tool | 5 of 5 | PASS | PASS | PASS | PASS | PASS | PASS (5/5) |
+| 3. State session consistency | 5 of 5 | PASS | PASS | PASS | PASS | PASS | PASS (5/5) |
+| 4. Fit card quality | 4 of 5 | PASS | PASS | PASS | PASS | PASS | PASS (5/5) |
+| 5. Tool routing parameter parsing | 4 of 5 | PASS | PASS | PASS | PASS | PASS | PASS (5/5) |
 
-**Real output from one try**, pasted as text, naming the file and function
-that produced it:
+**Real output from one try**, pasted as text, naming the file and function that produced it:
+
+```text
+# File: app.py | Function: run_agent()
+# Criterion 1: matching query completes (Try 1)
+[1] parse_query
+      in:  dict with keys: query
+      out: dict with keys: description, size, max_price
+[2] search_listings
+      in:  dict with keys: description, size, max_price
+      out: 10 items: Y2K Baby Tee — Butterfly Print, Graphic Tee — 2003 Tour Bootleg Style, Vintage Band Tee — Faded Grey … +7 more
+[3] select_item
+      in:  dict with keys: search_results_count
+      out: Y2K Baby Tee — Butterfly Print ($18.0, depop)
+[4] suggest_outfit
+      in:  dict with keys: item
+      out: Here are 2 outfit combinations using the new Y2K Butterfly Baby Tee and pieces from your existing wardrobe:  *…
+[5] create_fit_card
+      in:  dict with keys: outfit
+      out: Scored this Y2K Baby Tee — Butterfly Print on Depop for just $18! 🦋 Obsessed with the nostalgic vibe. Can’t wait to style…
+  try 1: completed — fit card 253 chars
+
+# Criterion 2: impossible query stops early (Try 1)
+[1] parse_query
+      in:  dict with keys: query
+      out: dict with keys: description, size, max_price
+[2] search_listings
+      in:  dict with keys: description, size, max_price
+      out: [] (empty)
+  try 1: stopped early — No listings found matching size 'XXS' and budget under $5.00
+
+# Criterion 3: state session consistency (Try 1)
+[3] select_item
+      in:  dict with keys: search_results_count
+      out: Y2K Baby Tee — Butterfly Print ($18.0, depop)
+[4] suggest_outfit
+      in:  dict with keys: item
+      out: Here are 2 outfit combinations using the new Y2K Baby Tee with pieces from your existing wardrobe:  **Outfit 1…
+[5] create_fit_card
+      in:  dict with keys: outfit
+      out: Found this Y2K Baby Tee — Butterfly Print on Depop for just $18.0! Obsessed with how cute it looks paired with…
+  try 1: completed — fit card 204 chars
+
+# Criterion 4: fit card quality check (Try 1)
+[5] create_fit_card
+      in:  dict with keys: outfit
+      out: Scored this gorgeous Y2K Baby Tee — Butterfly Print on Depop for just $18! Obsessed with how it looks paired with…
+  try 1: completed — fit card 202 chars
+
+# Criterion 5: tool routing parameter parsing (Try 1)
+[2] search_listings
+      in:  dict with keys: description, size, max_price
+      out: 8 items: Y2K Baby Tee — Butterfly Print, Mesh Long-Sleeve Top — Black, 90s Silk Slip Dress — Floral, Midi Length … +5 more
+[3] select_item
+      in:  dict with keys: search_results_count
+      out: Y2K Baby Tee — Butterfly Print ($18.0, depop)
+  try 1: completed — fit card 218 chars
 
 ```
 
