@@ -118,8 +118,6 @@ FitFindr is an AI-powered styling and outfit agent that finds clothing listings 
 
      The grader checks your code against what you claim here, so the file and
      function have to be real. -->
-
-## Planning Loop
 - **File and Function:** `agent.py::run_agent`
 "If `search_listings` returns an empty list `[]`, set a message in `session["error"]` explaining which query constraints failed and stop. Otherwise, store the top result in `session["selected_item"]` and proceed to `suggest_outfit`."
 — `agent.py::run_agent`
@@ -306,6 +304,34 @@ that produced it:
 ---
 
 ## Loop Trace
+
+(.venv) PS C:\Users\dokek\Downloads\ai201-project2-fitfindr-starter-v2026-main> python app.py ask 'vintage graphic tee under $30' --trace
+
+  Found:    Y2K Baby Tee — Butterfly Print — $18.0 on depop
+
+  Outfit:   Here are 2 outfit combinations using the new Y2K Butterfly Baby Tee and pieces already in your wardrobe:
+
+**Outfit 1: Casual Y2K Streetwear**
+*   **Top:** Y2K Baby Tee — Butterfly Print (new item)
+*   **Bottoms:** Dark blue / indigo bottoms
+*   **Shoes:** White shoes
+*   **Accessories:** Black accessory
+*   *Why it works:* The cropped, fitted silhouette of the baby tee pairs effortlessly with dark indigo denim for a classic 2000s off-duty look. White shoes brighten up the outfit and tie into any white accents in the butterfly graphic, while a black accessory (like a shoulder bag or belt) keeps the aesthetic grounded.
+
+**Outfit 2: Neutrals with a Pop**
+*   **Top:** Y2K Baby Tee — Butterfly Print (new item)
+*   **Bottoms:** Khaki / tan bottoms
+*   **Outerwear:** Black outerwear
+*   **Shoes:** Black shoes
+*   **Accessories:** Brown accessory
+*   *Why it works:* Earthy khaki and tan bottoms tone down the playful nature of the butterflyprint for a more balanced, everyday look. Throwing on black outerwear and black shoes adds a cool contrast, and a brown accessory adds a warm, earthy touch that complements the tan tones.
+
+  Fit card: Scored this dreamy Y2K Baby Tee — Butterfly Print on depop for just $18.0! ✨ So obsessed with how it looks paired with dark indigo denim or earthy khaki pants. Thrift gods definitely blessed me today! 🦋👖
+
+  (--trace printed nothing. You haven't added trace.step() calls to
+   run_agent() yet — that's unit 4, Milestone 2.)
+
+0 model calls this session, 2 served from cache
 
 <!-- One full run, printed step by step, with the MCP call visible in it.
 
