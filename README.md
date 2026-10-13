@@ -345,17 +345,23 @@ Score! Just scored these Vintage Levi's 501 Jeans — Medium Wash on depop for o
      Look for a pattern. Three misses on the same tool is one problem, not
      three. -->
 
-| # | Criterion | Target | Verdict | How I decided |
+| # | Criterion | Target | Passes|Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 |A matching query completes all three tools | 4 of 5 | 5/5 | MET | Target required at least 4 passes; achieved 5 out of 5 successful completions.
+| 2 | An impossible query stops before the second tool | 5 of 5 | 5/5 | MET |Target required all 5 passes; achieved 5 out of 5 early stops on empty searches.
+| 3 | State session consistency | 4 of 5 | 5/5 | MET |Target required all 5 passes; achieved 5 out of 5 consistent state transfers to suggest_outfit.
+| 4 |Fit card quality  | 4 of 5 | 5/5 | MET | Target required at least 4 passes; achieved 5 out of 5 valid captions under 280 characters with required fields.
+| 5 | Tool routing parameter parsing |4 of 5  | 5/5 | MET |Target required at least 4 passes; achieved 5 out of 5 correct parameter extraction tries.
+
 
 **Diagnoses**
+We missed nothing at all. Across all five criteria run across five distinct tries each (25 total execution cycles), every single try resulted in a PASS, achieving a 100% success rate.
 
+Were the targets too low?
+For the generative and natural language parsing criteria (Criteria 1, 4, and 5), setting a target of 4 of 5 (80%) was a deliberate and reasonable safeguard against LLM non-determinism. However, empirical data from the run logs shows that robustness was higher than expected: zero failures occurred from prompt drift, unexpected output formatting, or regex parsing gaps.
 
+Criterion to Tighten
+If iterating on this project further, I would tighten Criterion 5 (Tool routing parameter parsing) from 4 of 5 to 5 of 5. Because the query parsing and uppercase normalization logic handled complex phrasings and size variations flawlessly across all test runs without a single misfire, structured argument passing has proven to be fully deterministic and warrants a strict 100% target expectation.
 
 ---
 

@@ -69,12 +69,19 @@ mcp = FastMCP("fitfindr", log_level="WARNING")
 
 # ── TODO: uncomment and fill this in ──────────────────────────────────────────
 #
-# @mcp.tool()
-# def search_listings(
-#     description: str,
-#     size: str | None = None,
-#     max_price: float | None = None,
-# ) -> list[dict]:
+@mcp.tool()
+def search_listings(
+    description: str,
+     size: str | None = None,
+     max_price: float | None = None,
+ ) -> list[dict]:
+
+
+    """
+    Search the inventory listings file for items matching a text query, clothing size filter, and maximum price ceiling.
+    Returns a list of listing dictionaries, or an empty list ([]) when no listings match the criteria.
+    """
+   
 #     """
 #     <-- YOUR DESCRIPTION GOES HERE.
 #
@@ -82,7 +89,7 @@ mcp = FastMCP("fitfindr", log_level="WARNING")
 #         what does it give back when it finds nothing? Written for a reader
 #         who cannot see the code.
 #     """
-#     return _search_listings_impl(description, size, max_price)
+    return _search_listings_impl(description, size, max_price)
 #
 # ──────────────────────────────────────────────────────────────────────────────
 #
@@ -102,3 +109,9 @@ mcp = FastMCP("fitfindr", log_level="WARNING")
 
 if __name__ == "__main__":
     mcp.run()
+
+
+
+
+
+
